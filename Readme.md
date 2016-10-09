@@ -1,5 +1,5 @@
 # Meeting Assistant using IBM Watson
-## (using Scala and Akka) 
+## (using Scala, Akka, Circe) 
 
 ##Watson APIs used
 * Alchemy Language
@@ -10,8 +10,8 @@
 CI: 
 ```sbt clean test```
 
-Run twitter bot: 
+Run Server: 
 ```sbt "run-main mass.Server"```
 
-Run speech bot: 
-```sbt "run-main lab.NLCTrainer"```
+Run NLC Trainer: 
+```sbt "run-main mass.NLCTrainer"```

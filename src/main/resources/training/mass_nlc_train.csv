@@ -1,19 +1,35 @@
-can we do *?,meeting_actionitem
-as an action item,meeting_actionitem
-take care of,meeting_actionitem
-task,meeting_actionitem
-tasked with,meeting_actionitem
-try *,meeting_actionitem
-* was completed,meeting_accomplishment
-took care of *,meeting_accomplishment
-finished,meeting_accomplishment
-done,meeting_accomplishment
-completed,meeting_accomplishment
-not bother,meeting_accomplishment
-* is a problem,meeting_issue
-* could not be accomplished,meeting_issue
-issue,meeting_issue
-bottleneck,meeting_issue
-defect,meeting_issue
-bug,meeting_issue
-stuck with *,meeting_issue
+can you take care of,meeting_actionitem
+can you do this task,meeting_actionitem
+can you do a job,meeting_actionitem
+can you take an action item,meeting_actionitem
+can you do,meeting_actionitem
+can you decide,meeting_actionitem
+can you work on,meeting_actionitem
+can you send an email,meeting_actionitem
+can you call,meeting_actionitem
+can you draft an email,meeting_actionitem
+can you schedule a meeting,meeting_actionitem
+can you setup a call,meeting_actionitem
+this task was completed,meeting_accomplishment
+I took care of this task,meeting_accomplishment
+He did a great job,meeting_accomplishment
+it was an accomplishment,meeting_accomplishment
+the work finally finished,meeting_accomplishment
+the contract was signed,meeting_accomplishment
+we confirmed this,meeting_accomplishment
+we finished reviewing the document,meeting_accomplishment
+this is a problem,meeting_issue
+no progress was made,meeting_issue
+this is an issue,meeting_issue
+this is a show stopper,meeting_issue
+we are stuck with this,meeting_issue
+you failed to complete this task,meeting_issue
+this is not acceptable,meeting_issue
+hello everyone,meeting_general
+thanks for joining this call,meeting_general
+i am doing fine how are you,meeting_general
+how was your weekend,meeting_general
+any plans for the weekend,meeting_general
+do you know if * will be joining,meeting_general
+that is really funny,meeting_general
+let me ask him to join this meeting,meeting_general

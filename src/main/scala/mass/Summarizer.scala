@@ -22,13 +22,15 @@ class Summarizer(summarizerConf: SummarizerConfig) extends Actor with ActorLoggi
       val issues = Try(nlcVals("meeting_issue").map(nlc => sentenceMap(nlc.sentenceId).text)).getOrElse(List.empty)
       val accomplishments = Try(nlcVals("meeting_accomplishment").map(nlc => sentenceMap(nlc.sentenceId).text)).getOrElse(List.empty)
 
+      val entities = textMap.values.toList.sortWith(_.sentenceId < _.sentenceId).filter(_.entities.size > 0).map(_.entities).flatten.map(_.name)
+
       val analytics = sentenceVals.map {
         sentence =>
           val sentenceId = sentence.sentenceId
           SentenceAnalytics(sentence, nlcMap.get(sentenceId), toneMap.get(sentenceId), textMap.get(sentenceId))
       }
 
-      sender() ! MeetingMinutes(text, actionItems, issues, accomplishments, analytics)
+      sender() ! MeetingMinutes(text, entities, actionItems, issues, accomplishments, analytics)
 
     case sentence: Sentence =>
       sentenceMap += (sentence.sentenceId -> sentence)

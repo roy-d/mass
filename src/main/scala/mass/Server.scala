@@ -19,7 +19,11 @@ import mass.ToneAnalytics.ToneAnalyticsConfig
 import scala.collection.JavaConversions._
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, _}
-import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
+import mass.Messenger.MessengerConfig
 
 object Server extends App {
   implicit val timeout = Timeout(5.seconds)
@@ -45,6 +49,7 @@ object Server extends App {
   val system = ActorSystem("MeetingAssistantSystem")
   val meetingAssistant = system.actorOf(MeetingAssistant.props(meetingAssistantConfig), "meetingAssistant")
   val summarizer = system.actorOf(Summarizer.props(SummarizerConfig(System.currentTimeMillis(), System.currentTimeMillis())), "summarizer")
+  val messenger = system.actorOf(Messenger.props(MessengerConfig(config.getString("mass.mail.server"), config.getString("mass.mail.port"), config.getString("mass.mail.user"))))
 
   val sampleRate = 16000
   val format = new AudioFormat(sampleRate, 16, 1, true, false)
@@ -65,22 +70,30 @@ object Server extends App {
     new RecognizeOptions.Builder().continuous(true).interimResults(true).timestamps(true).wordConfidence(true)
       .contentType(HttpMediaType.AUDIO_RAW + "; rate=" + sampleRate).build()
 
+  def summarize(): Unit = {
+    val summaryFuture = (summarizer ? "summarize").mapTo[MeetingMinutes]
+    val summary = Await.result(summaryFuture, Duration.Inf)
+    val body = s"MINUTES OF MEETING:\n" +
+      s"-----------------------------------------------------\n" +
+      s"Text:\n${summary.text}\n" +
+      s"Entities:\n${summary.entities.asJson.spaces4}\n" +
+      s"Accomplishments:\n${summary.accomplishments.asJson.spaces4}\n" +
+      s"Issues:\n${summary.issues.asJson.spaces4}\n" +
+      s"Action Items:\n${summary.actionItems.asJson.spaces4}\n" +
+      s"Analytics:\n${summary.analytics.asJson.spaces4}\n" +
+      s"-----------------------------------------------------\n"
+    println(body)
+    messenger ! body
+  }
+
   service.recognizeUsingWebSocket(audio, options, new BaseRecognizeCallback() {
     override def onTranscription(speechResults: SpeechResults): Unit = {
       val text = speechResults.getResults.toList.filter(_.isFinal)
         .map(t => t.getAlternatives.toList.map(_.getTranscript).mkString(" "))
         .mkString(" ")
 
-      if(text.toLowerCase contains "summarize") {
-        val summaryFuture = (summarizer ? "summarize").mapTo[MeetingMinutes]
-        val summary = Await.result(summaryFuture, Duration.Inf)
+      if (text.toLowerCase contains "summarize") summarize()
 
-        println(s"SUMMARY\n-----------------------------------------------------")
-        println(s"Accomplishments:\n${summary.accomplishments.asJson.spaces4}")
-        println(s"Issues:\n${summary.issues.asJson.spaces4}")
-        println(s"Action Items:\n${summary.actionItems.asJson.spaces4}")
-        println(s"-----------------------------------------------------")
-      }
       if (text.nonEmpty) meetingAssistant ! text
     }
   })
@@ -88,18 +101,11 @@ object Server extends App {
   val duration = config.getInt("mass.audio.duration")
   println(s"Listening for next $duration seconds")
   Thread.sleep(duration * 1000)
-
   line.stop()
   line.close()
 
-  val summaryFuture = (summarizer ? "summarize").mapTo[MeetingMinutes]
-  val summary = Await.result(summaryFuture, Duration.Inf)
-  println(s"MINUTES OF MEETING\n-----------------------------------------------------")
-  println(s"Accomplishments:\n${summary.accomplishments.asJson.spaces4}")
-  println(s"Issues:\n${summary.issues.asJson.spaces4}")
-  println(s"Action Items:\n${summary.actionItems.asJson.spaces4}")
-  println(s"Analytics:\n${summary.analytics.asJson.spaces4}")
-  println(s"-----------------------------------------------------")
-
-  system.terminate()
+  summarize()
+  Thread.sleep(1000)
+  println("FINISHED SESSION !!")
+  System.exit(0)
 }

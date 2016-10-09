@@ -1,6 +1,7 @@
 package mass
 
 case class MeetingMinutes(text: String,
+                          entities: List[String],
                           actionItems: List[String],
                           issues: List[String],
                           accomplishments: List[String],

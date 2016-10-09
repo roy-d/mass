@@ -4,6 +4,7 @@ import java.util
 
 import akka.actor.{Actor, ActorLogging, Props}
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyLanguage
+import com.ibm.watson.developer_cloud.alchemy.v1.model.LanguageSelection
 import mass.TextAnalytics.TextAnalyticsConfig
 
 import scala.collection.JavaConversions._
@@ -11,6 +12,7 @@ import scala.util.Try
 
 class TextAnalytics(textAnalyticsConf: TextAnalyticsConfig) extends Actor with ActorLogging {
   val service = new AlchemyLanguage()
+  service.setLanguage(LanguageSelection.ENGLISH)
   service.setApiKey(textAnalyticsConf.apikey)
 
   val summarizer = context.actorSelection("../../summarizer")
@@ -18,7 +20,7 @@ class TextAnalytics(textAnalyticsConf: TextAnalyticsConfig) extends Actor with A
   def receive = {
     case sentence: Sentence =>
       val params = new util.HashMap[String, Object]()
-      params.put(AlchemyLanguage.TEXT, sentence)
+      params.put(AlchemyLanguage.TEXT, sentence.text)
 
       val sentiment = service.getSentiment(params).execute()
       val sentimentSummary = SentenceSentiment(

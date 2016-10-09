@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.4.10",
   "com.typesafe.akka" %% "akka-testkit" % "2.4.10",
   "com.ibm.watson.developer_cloud" % "java-sdk" % "3.3.1",
-  "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test",
+  "javax.mail" % "mail" % "1.4.7"
 )
     
