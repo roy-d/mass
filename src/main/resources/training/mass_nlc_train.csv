@@ -1,0 +1,19 @@
+can we do *?,meeting_actionitem
+as an action item,meeting_actionitem
+take care of,meeting_actionitem
+task,meeting_actionitem
+tasked with,meeting_actionitem
+try *,meeting_actionitem
+* was completed,meeting_accomplishment
+took care of *,meeting_accomplishment
+finished,meeting_accomplishment
+done,meeting_accomplishment
+completed,meeting_accomplishment
+not bother,meeting_accomplishment
+* is a problem,meeting_issue
+* could not be accomplished,meeting_issue
+issue,meeting_issue
+bottleneck,meeting_issue
+defect,meeting_issue
+bug,meeting_issue
+stuck with *,meeting_issue
